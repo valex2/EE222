@@ -1,0 +1,50 @@
+import numpy as np
+import matplotlib.pyplot as plt
+from scipy.special import airy
+
+# Constants (scaled down to avoid numerical issues)
+m = 9.11e-31  # Electron mass (kg)
+hbar = 1.054571817e-34  # Reduced Planck's constant (J.s)
+e = 1.602176634e-19  # Elementary charge (C)
+epsilon = 10e6  # 10V/um field
+energies = [1.697e-20, 2.967e-20, 4.0065e-20]  
+
+def airy_argument(z, epsilon, E):
+    constant = (2 * m * e * epsilon / hbar**2)**(1/3)
+    return constant * (z - E / (e * epsilon))
+
+z_values = np.linspace(0, 50e-9, 1000)  # z in meters (example range)
+z_values_nm = z_values * 1e9  # Convert meters to nanometers
+
+plt.figure(figsize=(10, 6))
+
+for idx, E in enumerate(energies):
+    # Compute the Airy argument and Airy function for each energy
+    airy_args = airy_argument(z_values, epsilon, E)
+    airy_values = airy(airy_args)[0]  # Airy function Ai
+    
+    # Apply vertical offset (increase the offset for higher energies)
+    offset = idx * 0.1  # Example offset (can be adjusted)
+    airy_values_shifted = airy_values + offset
+    
+    # Plot the Airy function with the offset
+    plt.plot(z_values_nm, airy_values_shifted, label=f'E{idx + 1} = {E:.3e} J')
+    
+    # Calculate and plot the turning points
+    z_turning_point = E / (e * epsilon)  # Calculate the turning point in meters
+    z_turning_point_nm = z_turning_point * 1e9  # Convert to nanometers
+    plt.axvline(x=z_turning_point_nm, color='r', linestyle='--')
+    
+    # Label the vertical line with its z-value
+    plt.text(z_turning_point_nm, offset, f'{z_turning_point_nm:.2f} nm', color='r', ha='right')
+
+# Label axes and title
+plt.xlabel('z (nm)')
+plt.ylabel(r'$\psi(z)$ with offset')
+plt.title('10V/um Wavefunctions for Different Energies')
+plt.grid(True)
+plt.legend()
+
+plt.show(block=False)
+input("Press Enter to continue...")
+plt.close()
