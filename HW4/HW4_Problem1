@@ -4,8 +4,10 @@ from scipy.special import airy
 
 # Constants (scaled down to avoid numerical issues)
 m = 9.11e-31  # Electron mass (kg)
+m = 0.041 * m
 hbar = 1.054571817e-34  # Reduced Planck's constant (J.s)
 e = 1.602176634e-19  # Elementary charge (C)
+# epsilon = 1e6
 epsilon = 10e6  # 10V/um field
 energies = [1.697e-20, 2.967e-20, 4.0065e-20]  
 
